@@ -1,0 +1,2 @@
+C:\Users\Demo\Desktop\MySuiteSpheroLibrary\MySuiteSphero\MySuiteSphero.jsproj;x64
+C:\Users\Demo\Desktop\MySuiteSpheroLibrary\MySuiteSpheroLibrary\MySuiteSpheroLibrary.csproj;x64
