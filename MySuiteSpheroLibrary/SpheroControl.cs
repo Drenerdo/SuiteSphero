@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RobotKit;
-
-namespace MySuiteSpheroLibrary
+﻿namespace MySuiteSpheroLibrary
 {
+    using RobotKit;
+    using System;
+    using System.Treading.Task;
+    using Windows.Foundation;
+
     public sealed class SpheroControl
     {
         Sphero sphero;
@@ -35,7 +33,6 @@ namespace MySuiteSpheroLibrary
                 this.SetColour();
             }
         }
-
         public int Green
         {
             get
@@ -51,77 +48,84 @@ namespace MySuiteSpheroLibrary
 
         public int Blue
         {
-            get
-            {
-                return (this.b);
-            }
-            set
-            {
-                this.b = value;
-                this.SetColour();
-            }
+          get
+          {
+            return (this.b);
+          }
+          set
+          {
+            this.b = value;
+            this.SetColour();
+          }
         }
+
         public float BacklightBrightness
         {
-            get
-            {
-                return (this.backlightBrightness);
-            }
-            set
-            {
-                this.backlightBrightness = value;
-                this.sphero.SetBackLED(this.backlightBrightness);
-            }
+          get
+          {
+            return (this.backlightBrightness);
+          }
+          set
+          {
+            this.backlightBrightness = value;
+            this.sphero.SetBackLED(this.backlightBrightness);
+          }
         }
-        void SetColour()
+        void SetColour();
         {
-            this.sphero.SetRGBLED(this.r, this.g, this.b);
+          this.sphero.SetRGBLED(this.r, this.g, this.b);
         }
-        public int Rotation
+        public int Rotation 
         {
-            get
-            {
-                return (this.rotation);
-            }
-            set
-            {
-                this.rotation = value;
-                this.sphero.Roll(this.rotation, 0);
-            }
+          get
+          {
+            return (this.rotation);
+          }
+          set
+          {
+            this.rotation = value;
+            this.sphero.Roll(this.rotation, 0);
+          }
         }
+
         public void Roll(float speed)
         {
-            this.sphero.Roll(this.rotation, speed);
+          this.sphero.Roll(this.rotation, speed);
         }
-        public static Windows.Foundation.IAsyncOperation<SpheroControl> GetFirstConnectedSpheroAsync()
+
+        public void Roll2(float speed, int rotation)
         {
-            Task<SpheroControl> task = InternalGetFirstConnectedSpheroAsync();
-            return (task.AsAsyncOperation());
+          this.sphero.Roll(rotation, speed);
+        }
+        public static IAsyncOperation<SpheroControl> GetFirstConnectedSpheroAsync()
+        {
+          Task<SpheroControl> task = InternalGetFirstConnectedSpheroAsync();
+          return (task.AsAsyncOperation());
         }
         static Task<SpheroControl> InternalGetFirstConnectedSpheroAsync()
         {
-            TaskCompletionSource<SpheroControl> task = new TaskCompletionSource<SpheroControl>();
+          TaskCompletionSource<SpheroControl> task = new TaskCompletionSource<SpheroControl>();
 
-            var provider = RobotProvider.GetSharedProvider();
-            EventHandler<Robot> handler = null;
+          var provider = RobotProvider.GetSharedProvider();
+          EventHandler<Robot> handler = null;
 
-            handler = (s, robot) =>
-                {
-                    provider.DiscoveredRobotEvent -= handler;
+          handler = (s, robot) =>
+          {
+            provider.DiscoveredRobotEvent -= handler;
 
-                    handler = (sender, cxnRobot) =>
-                        {
-                            provider.ConnectedRobotEvent -= handler;
-                            task.SetResult(new SpheroControl((Sphero)cxnRobot));
-                        };
-                    provider.ConnectedRobotEvent += handler;
-                    provider.ConnectRobot(robot);
-                };
+            handler = (sender, cnxRobot) =>
+            {
+              provider.ConnectedRobotEvent -= handler;
+              task.SetResult(new SpheroControl((Sphero)cxnRobot));
+            };
+            provider.ConnectedRobotEvent += handler;
+            provider.ConnectedRobot(robot);
+          };
 
-            provider.DiscoveredRobotEvent += handler;
-            provider.FindRobots();
+          provider.DiscoveredRobotEvent += handler;
+          provider.FindRobots();
 
-            return (task.Task);
+          return (task.Task);
         }
     }
 }
